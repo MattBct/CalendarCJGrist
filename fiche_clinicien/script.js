@@ -205,6 +205,7 @@ async function fetchTableProjets(tableID, key_records_id, ids_to_fetch) {
         const row = {
             "nom_projet": table_projets["Nom_du_projet"][index_record],
             "heures": table_projets["heures"][index_record],
+            "statut": table_projets["Statut_du_projet"][index_record]
         }
         list_projets.push(row);
     }
