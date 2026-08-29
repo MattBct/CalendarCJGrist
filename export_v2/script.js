@@ -15,7 +15,10 @@ grist.ready({
         { name: "date2", type: "Any", title: "Date et heure du RDV 2" },
         { name: "lieu2", type: "Any", title: "Lieu du RDV 2 (Référence)" },
         { name: "motif", type: "Any", title: "Motif du RDV" },
+        { name: "commentaires", type: "Any", title: "Commentaires", optional: true },
         { name: "statut", type: "Choice", title: "Statut du RDV" },
+        { name: "visio", type: "Bool", title: "Visioconférence", optional: true },
+        { name: "lienVisio", type: "Any", title: "Lien visioconférence", optional: true },
         { name: "pieceJointe", type: "Attachments", title: "Pièce jointe patient", optional: true }
     ]
 });
@@ -287,6 +290,8 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
         if (matches.length === 0) return;
 
         const idRdv = record.idRdv || "";
+        const estVisio = record.visio === true;
+        const lienVisio = extractLabel(record.lienVisio);
 
         matches.forEach(match => {
             exportData.push({
@@ -296,11 +301,14 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
                 date: toFrenchDate(match.isoDate),
                 heure: formatTime(match.value),
                 lieu: extractLabel(match.lieu),
+                lienVisio: lienVisio,
                 motif: record.motif || "",
+                commentairesGrist: record.commentaires || "",
                 clin1: "", clin2: "", clin3: "", clin4: "", clin5: "",
                 typeRdv: match.typeRdv,
                 statut: statut,
-                // Clé de tri uniquement : sans colonne correspondante, ExcelJS l'ignore.
+                // Clés sans colonne correspondante : ExcelJS les ignore à l'écriture de la ligne.
+                estVisio: estVisio,
                 sortKey: getTimestamp(match.value)
             });
         });
@@ -357,6 +365,7 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
         isSingleDay ? null : { header: 'Date', key: 'date', width: 14 },
         { header: 'Heure', key: 'heure', width: 15 },
         { header: 'Lieu', key: 'lieu', width: 25 },
+        { header: 'Lien visioconférence', key: 'lienVisio', width: 35 },
         { header: 'Motif', key: 'motif', width: 30 },
         { header: 'Clinicien 1', key: 'clin1', width: 20 },
         { header: 'Clinicien 2', key: 'clin2', width: 20 },
@@ -364,7 +373,9 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
         { header: 'Clinicien 4', key: 'clin4', width: 20 },
         { header: 'Clinicien 5', key: 'clin5', width: 20 },
         { header: 'Clinicien 6', key: 'clin6', width: 20 },
-        { header: 'Commentaires', key: 'commentaires', width: 60, height: 40, style: { alignment: { wrapText: true } } }
+        { header: 'Commentaires Grist', key: 'commentairesGrist', width: 60, style: { alignment: { wrapText: true } } },
+        // Colonne de saisie : volontairement vide à l'export.
+        { header: 'Commentaires co-présidents', key: 'commentairesCopres', width: 60, style: { alignment: { wrapText: true } } }
     ].filter(Boolean);
     worksheet.getColumn('idRdv').color = {argb: 'FFC03737'};
     worksheet.getColumn('idRdv').bold = true;
@@ -446,8 +457,28 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
     worksheet.getRow(6).font = { bold: true };
 
     // --- D. INSERTION DES DONNÉES ---
+    // Gris clair signalant les RDV tenus en visioconférence.
+    const VISIO_FILL = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
+    const lienVisioColNumber = worksheet.getColumn('lienVisio').number;
+    const columnCount = worksheet.columns.length;
+
     exportData.forEach(data => {
-        worksheet.addRow(data); // Ajoute automatiquement à la suite (donc à partir de la ligne 7)
+        const row = worksheet.addRow(data); // Ajoute automatiquement à la suite (donc à partir de la ligne 7)
+
+        // Sans hyperlien explicite, l'URL resterait un simple texte non cliquable.
+        if (/^https?:\/\//i.test(data.lienVisio)) {
+            const lienCell = row.getCell(lienVisioColNumber);
+            lienCell.value = { text: data.lienVisio, hyperlink: data.lienVisio };
+            lienCell.font = { color: { argb: 'FF0563C1' }, underline: true };
+        }
+
+        // La couleur doit couvrir toute la largeur du tableau : elle est posée cellule par
+        // cellule, un remplissage appliqué à l'objet ligne n'étant pas conservé par ExcelJS.
+        if (data.estVisio) {
+            for (let col = 1; col <= columnCount; col++) {
+                row.getCell(col).fill = VISIO_FILL;
+            }
+        }
     });
 
     // Filtre Excel sur la ligne d'en-tête : chaque colonne, dont « Statut du RDV »,
