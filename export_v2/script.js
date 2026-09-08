@@ -19,6 +19,8 @@ grist.ready({
         { name: "statut", type: "Choice", title: "Statut du RDV" },
         { name: "visio", type: "Bool", title: "Visioconférence", optional: true },
         { name: "lienVisio", type: "Any", title: "Lien visioconférence", optional: true },
+        { name: "avocatSupervision", type: "Bool", title: "Avocat en supervision", optional: true },
+        { name: "infosAvocatSupervision", type: "Any", title: "Informations avocat en supervision", optional: true },
         { name: "pieceJointe", type: "Attachments", title: "Pièce jointe patient", optional: true }
     ]
 });
@@ -292,6 +294,8 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
         const idRdv = record.idRdv || "";
         const estVisio = record.visio === true;
         const lienVisio = extractLabel(record.lienVisio);
+        const avocatSupervision = record.avocatSupervision === true;
+        const infosAvocatSupervision = extractLabel(record.infosAvocatSupervision);
 
         matches.forEach(match => {
             exportData.push({
@@ -303,6 +307,8 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
                 lieu: extractLabel(match.lieu),
                 lienVisio: lienVisio,
                 motif: record.motif || "",
+                avocatSupervision: avocatSupervision ? "Oui" : "Non",
+                infosAvocatSupervision: infosAvocatSupervision,
                 commentairesGrist: record.commentaires || "",
                 clin1: "", clin2: "", clin3: "", clin4: "", clin5: "",
                 typeRdv: match.typeRdv,
@@ -367,6 +373,8 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
         { header: 'Lieu', key: 'lieu', width: 25 },
         { header: 'Lien visioconférence', key: 'lienVisio', width: 35 },
         { header: 'Motif', key: 'motif', width: 30 },
+        { header: 'Avocat en supervision', key: 'avocatSupervision', width: 22 },
+        { header: 'Informations avocat en supervision', key: 'infosAvocatSupervision', width: 40, style: { alignment: { wrapText: true } } },
         { header: 'Clinicien 1', key: 'clin1', width: 20 },
         { header: 'Clinicien 2', key: 'clin2', width: 20 },
         { header: 'Clinicien 3', key: 'clin3', width: 20 },
@@ -381,6 +389,7 @@ document.getElementById('exportBtn').addEventListener('click', async () => {
     worksheet.getColumn('idRdv').bold = true;
     worksheet.getColumn('motif').alignment = { wrapText: true, vertical: 'top' };
     worksheet.getColumn('lieu').alignment = { wrapText: true, vertical: 'top' };
+    worksheet.getColumn('infosAvocatSupervision').alignment = { wrapText: true, vertical: 'top' };
 
     // 2. Insérer 5 lignes vides au début (l'en-tête des colonnes passe donc à la ligne 6)
     worksheet.spliceRows(1, 0, [], [], [], [], []);

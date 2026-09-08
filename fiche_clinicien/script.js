@@ -130,6 +130,30 @@ const COLUMNS_MAPPING = [
         allowMultiple: false
     },
     {
+        name: "nb_apprec_peu_satisfaisant",
+        title: "Nombre d'appréciations peu satisfaisantes",
+        optional: true,
+        type: "Int",
+        description: "Colonne contenant le décompte des appréciations peu satisfaisantes du clinicien",
+        allowMultiple: false
+    },
+    {
+        name: "nb_apprec_satisfaisant",
+        title: "Nombre d'appréciations satisfaisantes",
+        optional: true,
+        type: "Int",
+        description: "Colonne contenant le décompte des appréciations satisfaisantes du clinicien",
+        allowMultiple: false
+    },
+    {
+        name: "nb_apprec_tres_satisfaisant",
+        title: "Nombre d'appréciations très satisfaisantes",
+        optional: true,
+        type: "Int",
+        description: "Colonne contenant le décompte des appréciations très satisfaisantes du clinicien",
+        allowMultiple: false
+    },
+    {
         name: "heures_permanences",
         title: "Heures permanences",
         optional: false,
@@ -253,6 +277,9 @@ const mappedRecord = grist.onRecord(async (record) => {
     Alpine.store('clinicien').nb_rdv = records.nb_rdv
     Alpine.store('clinicien').nb_projets = records.nb_projets
     Alpine.store('clinicien').nb_rdv_termines = records.nb_rdv_termines
+    Alpine.store('clinicien').nb_apprec_peu_satisfaisant = records.nb_apprec_peu_satisfaisant ?? 0
+    Alpine.store('clinicien').nb_apprec_satisfaisant = records.nb_apprec_satisfaisant ?? 0
+    Alpine.store('clinicien').nb_apprec_tres_satisfaisant = records.nb_apprec_tres_satisfaisant ?? 0
     Alpine.store('clinicien').nb_permanences = records.nb_permanences
     Alpine.store('clinicien').heures_permanences = records.heures_permanences
     Alpine.store('clinicien').permanences = records.liste_permanences

@@ -46,6 +46,9 @@
                 heures_regul_net: 0,
                 nb_rdv: 0,
                 nb_rdv_termines: 0,
+                nb_apprec_peu_satisfaisant: 0,
+                nb_apprec_satisfaisant: 0,
+                nb_apprec_tres_satisfaisant: 0,
                 nb_projets: 0,
                 rdv: [],
                 projets: [],
@@ -106,6 +109,9 @@
                     <span style="font-size: 4.5em; font-weight:900; color:#c03737; line-height:1" x-text="$store.clinicien.nb_rdv"></span>
                     <span style="font-size: 1.5em; font-weight:600; color:black; margin-top:-15px">RDV</span>
                     <span style="font-size: 0.75em; margin-top: -10px">dont <strong style="color:#c03737"><span x-text="$store.clinicien.nb_rdv_termines"></span> <span x-text="plur($store.clinicien.nb_rdv_termines, 'RDV terminé', 'RDV terminés')"></span></strong></span>
+                    <span style="font-size: 0.75em; margin-top: -10px"><strong style="color:#c03737"><span x-text="$store.clinicien.nb_apprec_peu_satisfaisant"></span> <span x-text="plur($store.clinicien.nb_apprec_peu_satisfaisant, 'appréciation peu satisfaisante', 'appréciations peu satisfaisantes')"></span></strong></span>
+                    <span style="font-size: 0.75em; margin-top: -10px"><strong style="color:#c03737"><span x-text="$store.clinicien.nb_apprec_satisfaisant"></span> <span x-text="plur($store.clinicien.nb_apprec_satisfaisant, 'appréciation satisfaisante', 'appréciations satisfaisantes')"></span></strong></span>
+                    <span style="font-size: 0.75em; margin-top: -10px"><strong style="color:#c03737"><span x-text="$store.clinicien.nb_apprec_tres_satisfaisant"></span> <span x-text="plur($store.clinicien.nb_apprec_tres_satisfaisant, 'appréciation très satisfaisante', 'appréciations très satisfaisantes')"></span></strong></span>
                 </div>
                 <div style="display: flex; justify-content:left; flex-direction: column; align-items: center; gap: 10px;">
                     <span style="font-size: 4.5em; font-weight:900; color:#c03737; line-height:1" x-text="$store.clinicien.nb_projets"></span>
