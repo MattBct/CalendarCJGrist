@@ -40,7 +40,7 @@ const COLUMNS_MAPPING = [
         name: "heures_totales",
         title: "Heures totales",
         optional: false,
-        type: "Int", 
+        type: "Numeric,Int", 
         description: "Colonne contenant le décompte total des heures du clinicien",
         allowMultiple: false
     },
@@ -48,7 +48,7 @@ const COLUMNS_MAPPING = [
         name: "heures_rdv",
         title: "Heures de rendez-vous",
         optional: false,
-        type: "Int", 
+        type: "Numeric,Int", 
         description: "Colonne contenant le décompte des heures de rendez-vous du clinicien",
         allowMultiple: false
     },
@@ -56,7 +56,7 @@ const COLUMNS_MAPPING = [
         name: "heures_projet",
         title: "Heures de projets",
         optional: false,
-        type: "Int", 
+        type: "Numeric,Int", 
         description: "Colonne contenant le décompte des heures de projets du clinicien",
         allowMultiple: false
     },
@@ -64,7 +64,7 @@ const COLUMNS_MAPPING = [
         name: "heures_regul_credit",
         title: "Crédit d'heures (régulations)",
         optional: false,
-        type: "Int",
+        type: "Numeric,Int",
         description: "Colonne contenant le décompte des heures de crédit (régulations) du clinicien",
         allowMultiple: false
     },
@@ -72,7 +72,7 @@ const COLUMNS_MAPPING = [
         name: "heures_regul_debit",
         title: "Débit d'heures (régulations)",
         optional: false,
-        type: "Int",
+        type: "Numeric,Int",
         description: "Colonne contenant le décompte des heures de débit (régulations) du clinicien",
         allowMultiple: false
     },
@@ -80,7 +80,7 @@ const COLUMNS_MAPPING = [
         name: "heures_regul_net",
         title: "Net d'heures régulées",
         optional: false,
-        type: "Int",
+        type: "Numeric,Int",
         description: "Colonne contenant le décompte du net d'heures régulées du clinicien",
         allowMultiple: false
     },
@@ -157,7 +157,7 @@ const COLUMNS_MAPPING = [
         name: "heures_permanences",
         title: "Heures permanences",
         optional: false,
-        type: "Int"
+        type: "Numeric,Int"
     },
     {
         name: "nb_permanences",

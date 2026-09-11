@@ -32,6 +32,50 @@
             return Math.abs(n) <= 1 ? singulier : (pluriel ?? singulier + 's');
         }
 
+        // Décompose une valeur décimale d'heures (ex : 2.25) en heures et minutes (2 h 15)
+        function decomposeHeures(valeur) {
+            const total_minutes = Math.round((Number(valeur) || 0) * 60);
+            const minutes_absolues = Math.abs(total_minutes);
+
+            return {
+                signe: total_minutes < 0 ? -1 : 1,
+                heures: Math.floor(minutes_absolues / 60),
+                minutes: minutes_absolues % 60
+            };
+        }
+
+        function heuresPart(valeur) {
+            return decomposeHeures(valeur).heures;
+        }
+
+        function minutesPart(valeur) {
+            return decomposeHeures(valeur).minutes;
+        }
+
+        // Format compact pour les badges : "2 h", "2 h 15", "45 min"
+        function formatHeuresCourt(valeur) {
+            const { signe, heures, minutes } = decomposeHeures(valeur);
+            const prefixe = signe < 0 ? '- ' : '';
+
+            if (heures === 0 && minutes > 0) {
+                return prefixe + minutes + ' min';
+            }
+
+            return prefixe + heures + ' h' + (minutes > 0 ? ' ' + String(minutes).padStart(2, '0') : '');
+        }
+
+        // Format texte : "1 heure", "2 heures 15", "45 minutes"
+        function formatHeuresLong(valeur) {
+            const { signe, heures, minutes } = decomposeHeures(valeur);
+            const prefixe = signe < 0 ? '- ' : '';
+
+            if (heures === 0 && minutes > 0) {
+                return prefixe + minutes + ' ' + plur(minutes, 'minute', 'minutes');
+            }
+
+            return prefixe + heures + ' ' + plur(heures, 'heure', 'heures') + (minutes > 0 ? ' ' + String(minutes).padStart(2, '0') : '');
+        }
+
         document.addEventListener('alpine:init', () => {
             Alpine.store('clinicien', {
                 label_prenom_nom: "",
@@ -70,6 +114,15 @@
                         backgroundColor: ['#A73030', '#772222', '#471414', '#C03737',],
                         hoverOffset: 4
                     }]
+                },
+                options: {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => ' ' + formatHeuresCourt(context.parsed)
+                            }
+                        }
+                    }
                 }
             })
 
@@ -101,8 +154,9 @@
 
             <div style="margin-top:60px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: start; gap: 2em; row-gap: 2em;">
                 <div style="display: flex; justify-content:left; flex-direction: column; align-items: center; gap: 10px;">
-                    <span style="font-size: 4.5em; font-weight:900; color:#c03737; line-height:1" x-text="$store.clinicien.heures_totales"></span>
-                    <span style="font-size: 1.5em; font-weight:600; color:black; margin-top:-15px" x-text="plur($store.clinicien.heures_totales, 'heure', 'heures')"></span>
+                    <span style="font-size: 4.5em; font-weight:900; color:#c03737; line-height:1" x-text="heuresPart($store.clinicien.heures_totales)"></span>
+                    <span style="font-size: 1.5em; font-weight:600; color:black; margin-top:-15px" x-text="plur(heuresPart($store.clinicien.heures_totales), 'heure', 'heures')"></span>
+                    <span style="font-size: 0.75em; margin-top: -10px" x-show="minutesPart($store.clinicien.heures_totales) > 0">et <strong style="color:#c03737"><span x-text="minutesPart($store.clinicien.heures_totales)"></span> <span x-text="plur(minutesPart($store.clinicien.heures_totales), 'minute', 'minutes')"></span></strong></span>
                 </div>
 
                 <div style="display: flex; justify-content:center; flex-direction: column; align-items: center; gap: 10px;">
@@ -126,8 +180,8 @@
                 <div x-show='$store.clinicien.heures_regul_credit > 0 || Math.abs($store.clinicien.heures_regul_debit) > 0' >
                     <div style="display: flex; justify-content:left; flex-direction: column; align-items: center; padding:10px 20px; background-color:#f2f2f2; border-radius: 10px; gap: 10px;">
                         <span style="font-size: 1em; font-weight:600; color:#c03737;">Régulations individuelles</span>
-                        <span>+ <span x-text="$store.clinicien.heures_regul_credit"></span> <span x-text="plur($store.clinicien.heures_regul_credit, 'heure', 'heures')"></span></span>
-                        <span>- <span x-text="Math.abs($store.clinicien.heures_regul_debit)"></span> <span x-text="plur(Math.abs($store.clinicien.heures_regul_debit), 'heure', 'heures')"></span></span>
+                        <span>+ <span x-text="formatHeuresLong($store.clinicien.heures_regul_credit)"></span></span>
+                        <span>- <span x-text="formatHeuresLong(Math.abs($store.clinicien.heures_regul_debit))"></span></span>
                     </div>
                     
                 </div>
@@ -168,7 +222,7 @@
                                     </div>
                                 </div>
                                 <div style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
-                                    <span class="badge" :class="rdv.statut_rdv=='Terminé' ? 'success':'gris-fonce'" style="font-weight:bold; text-wrap:nowrap" x-text="rdv.heures_defaut + ' h'"></span>
+                                    <span class="badge" :class="rdv.statut_rdv=='Terminé' ? 'success':'gris-fonce'" style="font-weight:bold; text-wrap:nowrap" x-text="formatHeuresCourt(rdv.heures_defaut)"></span>
                                 </div>
                             </div>
 
@@ -186,7 +240,7 @@
                             <span x-text="projet.nom_projet" style="min-width: 0; overflow-wrap: break-word;"></span>
                             <div style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
                                 <!--<span class="badge" style="background-color:#FEFEFE; color:black">En cours</span>-->
-                                <span class="badge" :class="projet.statut=='Terminé' ? 'success':'gris-fonce'" style="font-weight:bold" x-text="projet.heures + ' h'"></span>
+                                <span class="badge" :class="projet.statut=='Terminé' ? 'success':'gris-fonce'" style="font-weight:bold" x-text="formatHeuresCourt(projet.heures)"></span>
                             </div>
                         </div>
                     </div>
@@ -203,7 +257,7 @@
                         <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
                             <span x-text="regul.motif" style="min-width: 0; overflow-wrap: break-word;"></span>
                             <div style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
-                                <span class="badge" :class="regul.heures > 0 ? 'success' : 'fail'" style="font-weight:bold" x-text="regul.heures + ' h'"></span>
+                                <span class="badge" :class="regul.heures > 0 ? 'success' : 'fail'" style="font-weight:bold" x-text="formatHeuresCourt(regul.heures)"></span>
                             </div>
                         </div>
                     </div>
