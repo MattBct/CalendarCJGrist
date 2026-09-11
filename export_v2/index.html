@@ -12,8 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <!-- FileSaver pour déclencher le téléchargement du fichier -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <!-- JSZip pour l'archive contenant l'Excel et les pièces jointes -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <style>
         body {
@@ -27,15 +25,6 @@
         }
         .container .date-range label {
             flex: 1;
-            margin: 0;
-        }
-        .container label[for="includeAttachments"] {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0;
-        }
-        .container label[for="includeAttachments"] input {
             margin: 0;
         }
         .container {
@@ -69,11 +58,7 @@
             <option value="rdv1">RDV 1 (Initial) uniquement</option>
             <option value="rdv2">RDV 2 (Restitution) uniquement</option>
         </select>
-        <label for="includeAttachments">
-            <input type="checkbox" id="includeAttachments" checked>
-            Inclure les pièces jointes des patients
-        </label>
-        <button id="exportBtn" style="background-color: #c03737; color: white;">Exporter (Excel + éventuelles pièces jointes)</button>
+        <button id="exportBtn" style="background-color: #c03737; color: white;">Exporter (Excel)</button>
     </div>
 
     <!-- Script logique -->
